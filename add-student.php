@@ -6,22 +6,28 @@ if (!isset($_SESSION['user'])) {
     header('location: ./');
 }
 
-$name = $duration = "";
+$name = $reg_no = "";
 if (isset($_POST['submit'])) {
     $name = htmlspecialchars($_POST['name']);
-    $duration = htmlspecialchars($_POST['duration']);
+    $reg_no = htmlspecialchars($_POST['reg_no']);
 
     if (empty($name)) {
-        $error = "Enter course name!";
-    } elseif (empty($duration)) {
-        $error = "Enter course duration!";
+        $error = "Enter student name!";
+    } elseif (empty($reg_no)) {
+        $error = "Enter student reg_no!";
     } else {
-        $sql = "INSERT INTO `courses`(`name`, `duration`) VALUES ('$name', '$duration')";
-        if ($conn->query($sql)) {
-            $success = "Magic has been spelled!";
-            $name = $duration = "";
+        $sql = "SELECT * FROM `students` WHERE `reg_no` = '$reg_no'";
+        $result = $conn->query($sql);
+        if ($result->num_rows === 0) {
+            $sql = "INSERT INTO `students`(`name`, `reg_no`) VALUES ('$name', '$reg_no')";
+            if ($conn->query($sql)) {
+                $success = "Magic has been spelled!";
+                $name = $reg_no = "";
+            } else {
+                $error = "Magic has failed to spell!";
+            }
         } else {
-            $error = "Magic has failed to spell!";
+            $error = "Reg no already exists!";
         }
     }
 }
@@ -39,7 +45,7 @@ if (isset($_POST['submit'])) {
 
     <link rel="canonical" href="https://demo-basic.adminkit.io/pages-blank.html" />
 
-    <title>Add Course</title>
+    <title>Add Student</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link href="./assets/css/app.css" rel="stylesheet">
@@ -57,10 +63,10 @@ if (isset($_POST['submit'])) {
                 <div class="container-fluid p-0">
                     <div class="row mb-2">
                         <div class="col-6">
-                            <h3>Add Course</h3>
+                            <h3>Add Student</h3>
                         </div>
                         <div class="col-6 text-end">
-                            <a href="./show-courses.php" class="btn btn-outline-primary">Back</a>
+                            <a href="./show-students.php" class="btn btn-outline-primary">Back</a>
                         </div>
                     </div>
                     <div class="row">
@@ -71,12 +77,12 @@ if (isset($_POST['submit'])) {
                                     <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
                                         <div class="mb-3">
                                             <label for="name" class="form-label">Name</label>
-                                            <input type="text" name="name" id="name" class="form-control" placeholder="Enter course name!" value="<?php echo $name ?>">
+                                            <input type="text" name="name" id="name" class="form-control" placeholder="Enter student name!" value="<?php echo $name ?>">
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="duration" class="form-label">Duration</label>
-                                            <input type="text" name="duration" id="duration" class="form-control" placeholder="Enter course duration!" value="<?php echo $duration ?>">
+                                            <label for="reg_no" class="form-label">Reg. No.</label>
+                                            <input type="text" name="reg_no" id="reg_no" class="form-control" placeholder="Enter student reg no!" value="<?php echo $reg_no ?>">
                                         </div>
 
                                         <div>

@@ -6,9 +6,19 @@ if (!isset($_SESSION['user'])) {
     header('location: ./');
 }
 
-$sql = "SELECT * FROM `students`";
+$sql = "SELECT `r`.`id`, `s`.`name` AS `student_name`, `c`.`name` AS `course_name`
+FROM `students` AS `s`
+INNER JOIN `registrations` AS `r`
+ON `s`.`id` = `r`.`student_id`
+INNER JOIN `courses` AS `c`
+ON `r`.`course_id` = `c`.`id`
+";
 $result = $conn->query($sql);
-$students = $result->fetch_all(MYSQLI_ASSOC);
+$registrations = $result->fetch_all(MYSQLI_ASSOC);
+// echo "<pre>";
+// print_r($registrations);
+// echo "</pre>";
+// die();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +33,7 @@ $students = $result->fetch_all(MYSQLI_ASSOC);
 
     <link rel="canonical" href="https://demo-basic.adminkit.io/pages-blank.html" />
 
-    <title>Students</title>
+    <title>Registrations</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link href="./assets/css/app.css" rel="stylesheet">
@@ -41,10 +51,10 @@ $students = $result->fetch_all(MYSQLI_ASSOC);
                 <div class="container-fluid p-0">
                     <div class="row mb-2">
                         <div class="col-6">
-                            <h3>Students</h3>
+                            <h3>Registrations</h3>
                         </div>
                         <div class="col-6 text-end">
-                            <a href="./add-student.php" class="btn btn-outline-primary">Add Student</a>
+                            <a href="./add-registration.php" class="btn btn-outline-primary">Add Registration</a>
                         </div>
                     </div>
                     <div class="row">
@@ -57,8 +67,8 @@ $students = $result->fetch_all(MYSQLI_ASSOC);
                                             <thead>
                                                 <tr>
                                                     <th>Sr. No.</th>
-                                                    <th>Name</th>
-                                                    <th>Reg No</th>
+                                                    <th>Student</th>
+                                                    <th>Course</th>
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>
@@ -66,14 +76,14 @@ $students = $result->fetch_all(MYSQLI_ASSOC);
                                             <tbody>
                                                 <?php
                                                 $sr = 1;
-                                                foreach ($students as $student) { ?>
+                                                foreach ($registrations as $registration) { ?>
                                                     <tr>
                                                         <td><?php echo $sr++ ?></td>
-                                                        <td><?php echo $student['name'] ?></td>
-                                                        <td><?php echo $student['reg_no'] ?></td>
+                                                        <td><?php echo $registration['student_name'] ?></td>
+                                                        <td><?php echo $registration['course_name'] ?></td>
                                                         <td>
-                                                            <a href="./edit-student.php?id=<?php echo $student['id'] ?>" class="btn btn-primary">Edit</a>
-                                                            <a href="./delete-student.php?id=<?php echo $student['id'] ?>" class="btn btn-danger">Delete</a>
+                                                            <a href="./edit-registration.php?id=<?php echo $registration['id'] ?>" class="btn btn-primary">Edit</a>
+                                                            <a href="./delete-registration.php?id=<?php echo $registration['id'] ?>" class="btn btn-danger">Delete</a>
                                                         </td>
                                                     </tr>
                                                 <?php
